@@ -19,27 +19,6 @@ logging.basicConfig(filename=LOG_FILENAME,
 logging.getLogger('assignment2')
 
 
-def main():
-    """Runs when the program is opened"""
-    if args is False:
-        break
-    else:
-        try:
-            csvData = downloadData(args)
-        except URLError:
-            print 'Please try a different URL'
-            raise
-        else:
-            personData = processData(csvData)
-            ID = int(raw_input("Enter a user ID: "))
-            if ID <= 0:
-                break
-            else:
-                displayPerson(ID)
-                main()
-
-    
-
 def downloadData(url):
     """Takes a URL as a string and opens it to retreive data.
 
@@ -92,6 +71,25 @@ def displayPerson(id,personData):
                         datetime.datetime.strftime(personData[ID][1],
                                                    '%Y-%m-%d'))
 
+
+def main():
+    """Runs when the program is opened"""
+    if args is False:
+        break
+    else:
+        try:
+            csvData = downloadData(args)
+        except URLError:
+            print 'Please try a different URL'
+            raise
+        else:
+            personData = processData(csvData)
+            ID = int(raw_input("Enter a user ID: "))
+            if ID <= 0:
+                break
+            else:
+                displayPerson(ID)
+                main()
 
 if __name__ == "__main__":
     main()
