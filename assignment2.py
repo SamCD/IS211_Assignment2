@@ -63,12 +63,12 @@ def processData(data):
     """
 
     membdays = {}
-    for i in csv.reader(data):
+    for j, i in enumerate(csv.reader(data)):
         try:
             bday = datetime.datetime.strptime(i[2],'%d/%m/%Y')
             membdays[i[0]] = (i[1], bday)
         except:
-            print 'NO'
+            logging.debug('Error processing line #{} for ID #{}'.format(j, i[0]))
     return membdays
 
 
