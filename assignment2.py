@@ -10,32 +10,32 @@ import logging
 
 parser = argparse.ArgumentParser()
 parser.add_argument("url")
-args = parser.parse_args()
 
 
 def main():
     """Runs when the program is opened"""
+
+    args = parser.parse_args()
     if args is False:
-        break
+        SystemExit
+    try:
+        csvData = downloadData(args)
+    except urllib2.URLError:
+        print 'Please try a different URL'
+        raise
     else:
-        try:
-            csvData = downloadData(args)
-        except URLError:
-            print 'Please try a different URL'
-            raise
+        LOG_FILENAME = 'errors.log'
+        logging.basicConfig(filename=LOG_FILENAME,
+                            level=logging.DEBUG,
+                            )
+        logging.getLogger('assignment2')
+        personData = processData(csvData)
+        ID = int(raw_input("Enter a user ID: "))
+        if ID <= 0:
+            raise Exception('Program exited, value <= 0')
         else:
-            LOG_FILENAME = 'errors.log'
-            logging.basicConfig(filename=LOG_FILENAME,
-                                level=logging.DEBUG,
-                                )
-            logging.getLogger('assignment2')
-            personData = processData(csvData)
-            ID = int(raw_input("Enter a user ID: "))
-            if ID <= 0:
-                break
-            else:
-                displayPerson(ID)
-                main()
+            displayPerson(ID)
+            main()
 
     
 
@@ -47,9 +47,8 @@ def downloadData(url):
     Ex; downloadData('http://www.myinfo.csv')
     > 
     """
-    
-    req = urllib2.Request(url)
-    return urllib2.urlopen(req)
+
+    return urllib2.urlopen(url)
 
 
 def processData(data):
@@ -90,3 +89,6 @@ def displayPerson(id,personData):
                         personData[ID][0],
                         datetime.datetime.strftime(personData[ID][1],
                                                    '%Y-%m-%d'))
+
+if __name__ == '__main__':
+    main()
