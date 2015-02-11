@@ -10,14 +10,34 @@ import logging
 
 parser = argparse.ArgumentParser()
 parser.add_argument("url")
-args = parser.parse_args()
 
-LOG_FILENAME = 'errors.log'
-logging.basicConfig(filename=LOG_FILENAME,
-                    level=logging.DEBUG,
-                    )
-logging.getLogger('assignment2')
 
+def main():
+    """Runs when the program is opened"""
+
+    args = parser.parse_args()
+    if args is False:
+        SystemExit
+    try:
+        csvData = downloadData(args)
+    except urllib2.URLError:
+        print 'Please try a different URL'
+        raise
+    else:
+        LOG_FILENAME = 'errors.log'
+        logging.basicConfig(filename=LOG_FILENAME,
+                            level=logging.DEBUG,
+                            )
+        logging.getLogger('assignment2')
+        personData = processData(csvData)
+        ID = int(raw_input("Enter a user ID: "))
+        if ID <= 0:
+            raise Exception('Program exited, value <= 0')
+        else:
+            displayPerson(ID)
+            main()
+
+    
 
 def downloadData(url):
     """Takes a URL as a string and opens it to retreive data.
@@ -27,9 +47,8 @@ def downloadData(url):
     Ex; downloadData('http://www.myinfo.csv')
     > 
     """
-    
-    req = urllib2.Request(url)
-    return urllib2.urlopen(req)
+
+    return urllib2.urlopen(url)
 
 
 def processData(data):
@@ -42,12 +61,12 @@ def processData(data):
     """
 
     membdays = {}
-    for j, i in enumerate(csv.reader(data)):
+    for i in csv.reader(data):
         try:
             bday = datetime.datetime.strptime(i[2],'%d/%m/%Y')
             membdays[i[0]] = (i[1], bday)
         except:
-            logging.debug('Error processing line #{} for ID #{}'.format(j, i[0]))
+            print 'NO'
     return membdays
 
 
@@ -71,25 +90,5 @@ def displayPerson(id,personData):
                         datetime.datetime.strftime(personData[ID][1],
                                                    '%Y-%m-%d'))
 
-
-def main():
-    """Runs when the program is opened"""
-    if args is False:
-        break
-    else:
-        try:
-            csvData = downloadData(args)
-        except URLError:
-            print 'Please try a different URL'
-            raise
-        else:
-            personData = processData(csvData)
-            ID = int(raw_input("Enter a user ID: "))
-            if ID <= 0:
-                break
-            else:
-                displayPerson(ID)
-                main()
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
