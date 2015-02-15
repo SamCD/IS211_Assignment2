@@ -19,7 +19,7 @@ def main():
     if args is False:
         SystemExit
     try:
-        csvData = downloadData(args)
+        csvData = downloadData(args.url)
     except urllib2.URLError:
         print 'Please try a different URL'
         raise
@@ -34,7 +34,7 @@ def main():
         if ID <= 0:
             raise Exception('Program exited, value <= 0')
         else:
-            displayPerson(ID)
+            displayPerson(ID, personData)
             main()
 
     
@@ -61,12 +61,13 @@ def processData(data):
     """
 
     membdays = {}
-    for i in csv.reader(data):
+    for j, i in enumerate(csv.reader(data)):
         try:
             bday = datetime.datetime.strptime(i[2],'%d/%m/%Y')
             membdays[i[0]] = (i[1], bday)
         except:
-            print 'NO'
+            logging.error('Error processing line #{} for ID #{}'.format(
+                            j,i[0]))
     return membdays
 
 
